@@ -112,7 +112,7 @@
  *
  * :[2400, 9600, 19200, 38400, 57600, 115200, 250000, 500000, 1000000]
  */
-#define BAUDRATE 250000
+#define BAUDRATE 115200
 
 //#define BAUD_RATE_GCODE     // Enable G-code M575 to set the baud rate
 
@@ -122,7 +122,7 @@
  * :[-2, -1, 0, 1, 2, 3, 4, 5, 6, 7]
  */
 #define SERIAL_PORT_2 1
-#define BAUDRATE_2 250000   // :[2400, 9600, 19200, 38400, 57600, 115200, 250000, 500000, 1000000] Enable to override BAUDRATE
+#define BAUDRATE_2 115200   // :[2400, 9600, 19200, 38400, 57600, 115200, 250000, 500000, 1000000] Enable to override BAUDRATE
 
 /**
  * Select a third serial port on the board to use for communication with the host.
@@ -565,10 +565,6 @@
   #define MAX31865_SENSOR_OHMS_1      100
   #define MAX31865_CALIBRATION_OHMS_1 430
 #endif
-#if TEMP_SENSOR_IS_MAX_TC(2)
-  #define MAX31865_SENSOR_OHMS_2      100
-  #define MAX31865_CALIBRATION_OHMS_2 430
-#endif
 
 #if HAS_E_TEMP_SENSOR
   #define TEMP_RESIDENCY_TIME         10  // (seconds) Time to wait for hotend to "settle" in M109
@@ -668,9 +664,9 @@
     #define DEFAULT_Ki_LIST {   1.08,   1.08 }
     #define DEFAULT_Kd_LIST { 114.00, 114.00 }
   #else
-    #define DEFAULT_Kp  29.85
-    #define DEFAULT_Ki   3.27
-    #define DEFAULT_Kd  68.06
+    #define DEFAULT_Kp  24.78
+    #define DEFAULT_Ki   2.77
+    #define DEFAULT_Kd  55.50
   #endif
 #endif
 
@@ -1164,22 +1160,21 @@
  * following movement settings. If fewer factors are given than the
  * total number of extruders, the last value applies to the rest.
  */
-//#define DISTINCT_E_FACTORS
+#define DISTINCT_E_FACTORS
 
 /**
  * Default Axis Steps Per Unit (linear=steps/mm, rotational=steps/°)
  * Override with M92
  *                                      X, Y, Z [, I [, J [, K...]]], E0 [, E1[, E2...]]
  */
-#define DEFAULT_AXIS_STEPS_PER_UNIT   { 80, 80, 800, 135.88574 }
+#define DEFAULT_AXIS_STEPS_PER_UNIT   { 80, 80, 803, 135.88574 }
 
 /**
  * Default Max Feed Rate (linear=mm/s, rotational=°/s)
  * Override with M203
  *                                      X, Y, Z [, I [, J [, K...]]], E0 [, E1[, E2...]]
  */
-#define DEFAULT_MAX_FEEDRATE          { 300, 300, 5, 25 }
-// #define DEFAULT_MAX_FEEDRATE          { 8000, 8000, 15, 15000 }
+#define DEFAULT_MAX_FEEDRATE          { 8000, 8000, 15, 15000 }
 
 //#define LIMITED_MAX_FR_EDITING        // Limit edit via M203 or LCD to DEFAULT_MAX_FEEDRATE * 2
 #if ENABLED(LIMITED_MAX_FR_EDITING)
@@ -1192,9 +1187,7 @@
  * Override with M201
  *                                      X, Y, Z [, I [, J [, K...]]], E0 [, E1[, E2...]]
  */
-//#define DEFAULT_MAX_ACCELERATION      { 3000, 3000, 100, 10000 }
-// #define DEFAULT_MAX_ACCELERATION      { 5000, 5000, 100, 10000 }
-#define DEFAULT_MAX_ACCELERATION      { 500, 500, 100, 1000 }
+#define DEFAULT_MAX_ACCELERATION      { 5000, 5000, 100, 10000 }
 
 //#define LIMITED_MAX_ACCEL_EDITING     // Limit edit via M201 or LCD to DEFAULT_MAX_ACCELERATION * 2
 #if ENABLED(LIMITED_MAX_ACCEL_EDITING)
@@ -1209,12 +1202,13 @@
  *   M204 R    Retract Acceleration
  *   M204 T    Travel Acceleration
  */
-// #define DEFAULT_ACCELERATION          200    // X, Y, Z and E acceleration for printing moves
-// #define DEFAULT_RETRACT_ACCELERATION  1000    // E acceleration for retracts
-// #define DEFAULT_TRAVEL_ACCELERATION   1000    // X, Y, Z acceleration for travel (non printing) moves
-#define DEFAULT_ACCELERATION          500    // X, Y, Z and E acceleration for printing moves
-#define DEFAULT_RETRACT_ACCELERATION  500    // E acceleration for retracts
-#define DEFAULT_TRAVEL_ACCELERATION   1000    // X, Y, Z acceleration for travel (non printing) moves
+#define DEFAULT_ACCELERATION                   200  // X, Y, Z ... and E acceleration for printing moves
+#define DEFAULT_RETRACT_ACCELERATION          1000  // E acceleration for retracts
+#define DEFAULT_TRAVEL_ACCELERATION           1000  // X, Y, Z ... acceleration for travel (non printing) moves
+#if ENABLED(AXIS4_ROTATES)
+  #define DEFAULT_ANGULAR_ACCELERATION        3000  // I, J, K acceleration for rotational-only printing moves
+  #define DEFAULT_ANGULAR_TRAVEL_ACCELERATION 3000  // I, J, K acceleration for rotational-only travel (non printing) moves
+#endif
 
 /**
  * Default Jerk limits (mm/s)
@@ -1244,7 +1238,7 @@
   #endif
 #endif
 
-#define DEFAULT_EJERK    5  // May be used by Linear Advance
+#define DEFAULT_EJERK    0.5  // May be used by Linear Advance
 
 /**
  * Junction Deviation Factor
@@ -1254,7 +1248,7 @@
  *   https://blog.kyneticcnc.com/2018/10/computing-junction-deviation-for-marlin.html
  */
 #if DISABLED(CLASSIC_JERK)
-  #define JUNCTION_DEVIATION_MM 0.0878 // (mm) Distance from real junction edge
+  #define JUNCTION_DEVIATION_MM 0.15 // (mm) Distance from real junction edge
   #define JD_HANDLE_SMALL_SEGMENTS    // Use curvature estimation instead of just the junction angle
                                       // for small segments (< 1mm) with large junction angles (> 135°).
 #endif
@@ -1704,16 +1698,16 @@
 // @section geometry
 
 // The size of the printable area
-#define X_BED_SIZE 350
-#define Y_BED_SIZE 350
+#define X_BED_SIZE 358
+#define Y_BED_SIZE 370
 
 // Travel limits (linear=mm, rotational=°) after homing, corresponding to endstop positions.
-#define X_MIN_POS 0
-#define Y_MIN_POS 0
-#define Z_MIN_POS 0
-#define X_MAX_POS X_BED_SIZE
-#define Y_MAX_POS Y_BED_SIZE
-#define Z_MAX_POS 400 + Z_MIN_POS
+#define X_MIN_POS  8
+#define Y_MIN_POS -1
+#define Z_MIN_POS  0
+#define X_MAX_POS  X_BED_SIZE + X_MIN_POS
+#define Y_MAX_POS  Y_BED_SIZE + Y_MIN_POS
+#define Z_MAX_POS  400        + Z_MIN_POS
 //#define I_MIN_POS 0
 //#define I_MAX_POS 50
 //#define J_MIN_POS 0
@@ -3071,7 +3065,7 @@
 //#define MKS_ROBIN_TFT_V1_1R
 
 //
-// 480x320, 3.5", FSMC Stock Display from Tronxy
+// 480x320, 3.5", FSMC Stock Display from TronxXY
 //
 //#define TFT_TRONXY_X5SA
 
@@ -3213,25 +3207,25 @@
 
 // Set number of user-controlled fans. Disable to use all board-defined fans.
 // :[1,2,3,4,5,6,7,8]
-//#define NUM_M106_FANS 1
+#define NUM_M106_FANS 1
 
 // Use software PWM to drive the fan, as for the heaters. This uses a very low frequency
 // which is not as annoying as with the hardware PWM. On the other hand, if this frequency
 // is too low, you should also increment SOFT_PWM_SCALE.
-//#define FAN_SOFT_PWM
+#define FAN_SOFT_PWM
 
 // Incrementing this by 1 will double the software PWM frequency,
 // affecting heaters, and the fan if FAN_SOFT_PWM is enabled.
 // However, control resolution will be halved for each increment;
 // at zero value, there are 128 effective control positions.
 // :[0,1,2,3,4,5,6,7]
-//#define SOFT_PWM_SCALE 4
+#define SOFT_PWM_SCALE 3
 
 // If SOFT_PWM_SCALE is set to a value higher than 0, dithering can
 // be used to mitigate the associated resolution loss. If enabled,
 // some of the PWM cycles are stretched so on average the desired
 // duty cycle is attained.
-//#define SOFT_PWM_DITHER
+#define SOFT_PWM_DITHER
 
 // @section extras
 
